@@ -2,11 +2,11 @@ class V1::ActivitiesController < ApplicationController
   before_action :find_user
 
   def create
-    activity = @user.activities.create(activity_params)
-    if activity.errors.any?
-      render json: {success: false, errors: activity.errors}
-    else
+    obj = RecordSave.new(activity_params[:activity], "Activity",  @user)
+    if obj.save
       render json: {success: true, message: "Successful created"}
+    else
+      render json: {success: false, errors: obj.errors}
     end
   end
 
@@ -17,6 +17,6 @@ class V1::ActivitiesController < ApplicationController
     end
 
     def activity_params
-      params.require(:activity).permit(:date, :food_category_id, :activity_level)
+      params.permit(activity: [:date, :food_category_id, :activity_level])
     end
 end
